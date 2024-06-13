@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import Itens from './pages/Itens';
 import Vendas from './pages/Vendas';
 import Pedidos from './pages/Pedidos';
-
+import RelatorioVendas from './pages/RelatorioVendas';
 const App = () => {
     return (
         <Router>
@@ -13,6 +13,7 @@ const App = () => {
                 <Route path="/itens" element={<Itens />} />
                 <Route path="/vendas" element={<Vendas />} />
                 <Route path="/pedidos" element={<Pedidos />} />
+                <Route path='/relatorio'element={<RelatorioVendas/>} />
             </Routes>
         </Router>
     );

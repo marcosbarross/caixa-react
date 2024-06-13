@@ -1,16 +1,17 @@
-import React from 'react';
-import Navbar from '../components/Navbar';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useEffect, useState } from 'react';
+import { Container } from 'react-bootstrap';
+import axios from 'axios';
+import CustomNavbar from '../components/CustomNavbar';
 
-const Home = () => {
-    return (
-        <div>
-            <Navbar />
-            <div className="container mt-4">
-                <h1>Bem-vindo à Raiz do Saber</h1>
-            </div>
-        </div>
-    );
-};
+function Home() {
+  return (
+    <>
+      <CustomNavbar />
+      <Container className="mt-4">
+        <h1>Caixa</h1>
+      </Container>
+    </>
+  );
+}
 
 export default Home;
