@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Form, Button, Table } from 'react-bootstrap';
 import axios from 'axios';
 import CustomNavbar from '../components/CustomNavbar';
+import getApiUrl from '../util/api';
 
 function Itens() {
   const [produtos, setProdutos] = useState([]);
@@ -14,7 +15,7 @@ function Itens() {
   }, []);
 
   const loadProdutos = () => {
-    axios.get('http://127.0.0.1:8000/produtos/')
+    axios.get(`${getApiUrl()}/produtos/`)
       .then(response => setProdutos(response.data))
       .catch(error => console.error('Error loading products:', error));
   };
@@ -22,7 +23,7 @@ function Itens() {
   const handleAddProduto = (e) => {
     e.preventDefault();
     const newProduto = { nome, preco: parseFloat(preco), estoque: parseInt(estoque) };
-    axios.post('http://127.0.0.1:8000/produtos/', newProduto)
+    axios.post(`${getApiUrl()}/produtos/`, newProduto)
       .then(() => {
         loadProdutos();
         setNome('');
@@ -33,7 +34,7 @@ function Itens() {
   };
 
   const handleDeleteProduto = (id) => {
-    axios.delete(`http://127.0.0.1:8000/produtos/${id}`)
+    axios.delete(`${getApiUrl()}/produtos/${id}`)
       .then(() => loadProdutos())
       .catch(error => console.error('Error deleting product:', error));
   };

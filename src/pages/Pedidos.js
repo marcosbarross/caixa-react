@@ -3,23 +3,24 @@ import { Container, Table, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { jsPDF } from 'jspdf';
 import CustomNavbar from '../components/CustomNavbar';
+import getApiUrl from '../util/api';
 
 function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
   const [produtos, setProdutos] = useState([]);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/pedidos/')
+    axios.get(`${getApiUrl()}/pedidos/`)
       .then(response => setPedidos(response.data))
       .catch(error => console.error('Error loading orders:', error));
 
-    axios.get('http://127.0.0.1:8000/produtos/')
+    axios.get(`${getApiUrl()}/produtos/`)
       .then(response => setProdutos(response.data))
       .catch(error => console.error('Error loading products:', error));
   }, []);
 
   const handleDeletePedido = (id) => {
-    axios.delete(`http://127.0.0.1:8000/pedidos/${id}`)
+    axios.delete(`${getApiUrl()}/pedidos/${id}`)
       .then(() => setPedidos(pedidos.filter(pedido => pedido.id !== id)))
       .catch(error => console.error('Error deleting order:', error));
   };

@@ -1,3 +1,6 @@
+#uvicorn main:app --host 10.0.0.144 --port 8000
+
+
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session

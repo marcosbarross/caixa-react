@@ -3,18 +3,16 @@ import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import { jsPDF } from 'jspdf';
 import CustomNavbar from '../components/CustomNavbar';
+import getApiUrl from '../util/api';
 
 function Vendas() {
   const [itemCount, setItemCount] = useState(1);
   const [itens, setItens] = useState([{ produto_id: '', quantidade: '' }]);
   const [produtos, setProdutos] = useState([]);
-  const [valorPago, setValorPago] = useState('');
-  const [troco, setTroco] = useState(0);
-  const [metodoSemTroco, setMetodoSemTroco] = useState(true);
   const [totalPedido, setTotalPedido] = useState(0);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/produtos/')
+    axios.get(`${getApiUrl()}/produtos/`)
       .then(response => setProdutos(response.data))
       .catch(error => console.error('Error loading products:', error));
   }, []);
@@ -42,23 +40,12 @@ function Vendas() {
 
   const handleVendaSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://127.0.0.1:8000/pedidos/', itens)
+    axios.post(`${getApiUrl()}/pedidos/`, itens)
       .then(response => {
         alert(`Venda realizada com sucesso! Pedido ID: ${response.data.id}`);
-        calcularTroco(response.data);
         gerarCupomFiscal(response.data);
       })
       .catch(error => alert(`Erro ao realizar venda: ${error.response.data.detail}`));
-  };
-
-  const calcularTroco = (pedido) => {
-    let total = 0;
-    pedido.itens.forEach(item => {
-      const produto = produtos.find(p => p.id === item.produto_id);
-      total += produto.preco * item.quantidade;
-    });
-    const trocoCalculado = valorPago - total;
-    setTroco(trocoCalculado > 0 ? trocoCalculado : 0);
   };
 
   const calcularTotalPedido = () => {
@@ -123,16 +110,6 @@ function Vendas() {
     doc.text('Total:', startX, startY);
     doc.text(totalPrice.toFixed(2), startX + 3 * columnWidth, startY);
 
-    if (!metodoSemTroco) {
-      startY += lineHeight / 2;
-      doc.text('Valor pago:', startX, startY);
-      doc.text(parseFloat(valorPago).toFixed(2), startX + 3 * columnWidth, startY);
-
-      startY += lineHeight / 2;
-      doc.text('Troco:', startX, startY);
-      doc.text(troco.toFixed(2), startX + 3 * columnWidth, startY);
-    }
-
     const string = doc.output('bloburl');
     window.open(string, '_blank');
   };
@@ -180,44 +157,7 @@ function Vendas() {
               </Row>
             </div>
           ))}
-        <Button variant="primary" onClick={handleAddItem}>Adicionar item</Button>
-          <Row className="mt-3">
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Valor Pago</Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="Valor Pago"
-                  value={valorPago}
-                  onChange={e => {
-                    setValorPago(e.target.value);
-                    if (!metodoSemTroco) {
-                      calcularTroco({ itens });
-                    }
-                  }}
-                  disabled={metodoSemTroco}
-                  required
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6} className="d-flex align-items-center">
-              <Form.Group controlId="metodoSemTroco">
-                <Form.Check
-                  type="checkbox"
-                  label="Método sem troco"
-                  checked={metodoSemTroco}
-                  onChange={e => {
-                    setMetodoSemTroco(e.target.checked);
-                    if (e.target.checked) {
-                      setTroco(0);
-                    } else {
-                      calcularTroco({ itens });
-                    }
-                  }}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+          <Button variant="primary" onClick={handleAddItem}>Adicionar item</Button>
           <Row className="mt-3">
             <Col md={12}>
               <h4>Total: {totalPedido.toFixed(2)}</h4>

@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Container, Table } from 'react-bootstrap';
 import axios from 'axios';
 import CustomNavbar from '../components/CustomNavbar';
+import getApiUrl from '../util/api';
 
 function RelatorioVendas() {
   const [relatorio, setRelatorio] = useState({ itens: [], total_vendido: 0 });
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/relatorio/')
+    axios.get(`${getApiUrl()}/relatorio/`)
       .then(response => setRelatorio(response.data))
       .catch(error => console.error('Error loading report:', error));
   }, []);
