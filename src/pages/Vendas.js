@@ -10,6 +10,12 @@ function Vendas() {
   const [itens, setItens] = useState([{ produto_id: '', quantidade: '' }]);
   const [produtos, setProdutos] = useState([]);
   const [totalPedido, setTotalPedido] = useState(0);
+  const [valorPago, setValorPago] = useState(0);
+  const [troco, setTroco] = useState(0);
+  const [semTroco, setSemTroco] = useState(false);
+  if (isNaN(troco)) {
+    setTroco(0);
+  }
 
   useEffect(() => {
     axios.get(`${getApiUrl()}/produtos/`)
@@ -20,6 +26,15 @@ function Vendas() {
   useEffect(() => {
     calcularTotalPedido();
   }, [itens]);
+
+  useEffect(() => {
+    if (semTroco) {
+      setTroco(0);
+      setValorPago(totalPedido);
+    } else {
+      calcularTroco();
+    }
+  }, [valorPago, semTroco]);
 
   const handleAddItem = () => {
     setItens([...itens, { produto_id: '', quantidade: '' }]);
@@ -40,13 +55,17 @@ function Vendas() {
 
   const handleVendaSubmit = (e) => {
     e.preventDefault();
+    if (valorPago > totalPedido) {
     axios.post(`${getApiUrl()}/pedidos/`, itens)
       .then(response => {
         alert(`Venda realizada com sucesso! Pedido ID: ${response.data.id}`);
         gerarCupomFiscal(response.data);
       })
       .catch(error => alert(`Erro ao realizar venda: ${error.response.data.detail}`));
-  };
+  } else {
+    alert('Valor pago insuficiente');
+  }
+}
 
   const calcularTotalPedido = () => {
     let total = 0;
@@ -57,6 +76,20 @@ function Vendas() {
       }
     });
     setTotalPedido(total);
+  };
+
+  const handleValorPagoChange = (e) => {
+    setValorPago(parseFloat(e.target.value));
+  };
+
+  const handleCheckboxChange = () => {
+    setSemTroco(!semTroco);
+  };
+
+  const calcularTroco = () => {
+    if (!semTroco) {
+      setTroco(valorPago - totalPedido);
+    }
   };
 
   const gerarCupomFiscal = (pedido) => {
@@ -109,6 +142,12 @@ function Vendas() {
     startY += lineHeight / 2;
     doc.text('Total:', startX, startY);
     doc.text(totalPrice.toFixed(2), startX + 3 * columnWidth, startY);
+    startY += lineHeight;
+    doc.text('Valor Pago:', startX, startY);
+    doc.text(valorPago.toFixed(2), startX + 3 * columnWidth, startY);
+    startY += lineHeight;
+    doc.text('Troco:', startX, startY);
+    doc.text(troco.toFixed(2), startX + 3 * columnWidth, startY);
 
     const string = doc.output('bloburl');
     window.open(string, '_blank');
@@ -159,12 +198,37 @@ function Vendas() {
           ))}
           <Button variant="primary" onClick={handleAddItem}>Adicionar item</Button>
           <Row className="mt-3">
-            <Col md={12}>
+            <Col md={4}>
+              <Form.Group>
+                <Form.Label>Valor Pago</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="Valor Pago"
+                  value={valorPago}
+                  onChange={handleValorPagoChange}
+                  onBlur={calcularTroco}
+                  required
+                  disabled={semTroco}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4} className="d-flex align-items-end">
+              <Form.Group controlId="formBasicCheckbox">
+                <Form.Check 
+                  type="checkbox" 
+                  label="Método de pagamento sem troco" 
+                  checked={semTroco} 
+                  onChange={handleCheckboxChange} 
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4}>
               <h4>Total: {totalPedido.toFixed(2)}</h4>
+              <h5>Troco: {troco.toFixed(2)}</h5>
             </Col>
           </Row>
           <br />
-          <Button type="submit">Finalizar venda</Button>
+          <Button type="submit" variant='success'>Finalizar venda</Button>
         </Form>
       </Container>
     </>
