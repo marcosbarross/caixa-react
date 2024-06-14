@@ -56,17 +56,19 @@ function Pedidos() {
 
     pedido.itens.forEach(item => {
       const produto = produtos.find(p => p.id === item.produto_id);
-      const quantidade = item.quantidade;
-      const precoUnitario = produto.preco;
-      const subtotal = quantidade * precoUnitario;
+      if (produto) {
+        const quantidade = item.quantidade;
+        const precoUnitario = produto.preco;
+        const subtotal = quantidade * precoUnitario;
 
-      doc.text(produto.nome, startX, startY);
-      doc.text(quantidade.toString(), startX + 1.7 * columnWidth, startY);
-      doc.text(precoUnitario.toFixed(2), startX + 2.2 * columnWidth, startY);
-      doc.text(subtotal.toFixed(2), startX + 3 * columnWidth, startY);
-      startY += lineHeight / 2;
+        doc.text(produto.nome, startX, startY);
+        doc.text(quantidade.toString(), startX + 1.7 * columnWidth, startY);
+        doc.text(precoUnitario.toFixed(2), startX + 2.2 * columnWidth, startY);
+        doc.text(subtotal.toFixed(2), startX + 3 * columnWidth, startY);
+        startY += lineHeight / 2;
 
-      totalPrice += subtotal;
+        totalPrice += subtotal;
+      }
     });
 
     startY += lineHeight;
@@ -100,9 +102,13 @@ function Pedidos() {
                 <td>
                   {pedido.itens.map(item => {
                     const produto = produtos.find(p => p.id === item.produto_id);
-                    return (
+                    return produto ? (
                       <div key={item.id}>
                         {produto.nome} - {item.quantidade}
+                      </div>
+                    ) : (
+                      <div key={item.id}>
+                        Produto não encontrado - {item.quantidade}
                       </div>
                     );
                   })}
@@ -110,7 +116,7 @@ function Pedidos() {
                 <td>
                   {pedido.itens.reduce((total, item) => {
                     const produto = produtos.find(p => p.id === item.produto_id);
-                    return total + (produto.preco * item.quantidade);
+                    return produto ? total + (produto.preco * item.quantidade) : total;
                   }, 0).toFixed(2)}
                 </td>
                 <td>
