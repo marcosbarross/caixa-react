@@ -55,7 +55,7 @@ function Vendas() {
 
   const handleVendaSubmit = (e) => {
     e.preventDefault();
-    if (valorPago > totalPedido) {
+    if (valorPago >= totalPedido) {
     axios.post(`${getApiUrl()}/pedidos/`, itens)
       .then(response => {
         alert(`Venda realizada com sucesso! Pedido ID: ${response.data.id}`);
@@ -142,10 +142,10 @@ function Vendas() {
     startY += lineHeight / 2;
     doc.text('Total:', startX, startY);
     doc.text(totalPrice.toFixed(2), startX + 3 * columnWidth, startY);
-    startY += lineHeight;
+    startY += lineHeight / 2;
     doc.text('Valor Pago:', startX, startY);
     doc.text(valorPago.toFixed(2), startX + 3 * columnWidth, startY);
-    startY += lineHeight;
+    startY += lineHeight / 2;
     doc.text('Troco:', startX, startY);
     doc.text(troco.toFixed(2), startX + 3 * columnWidth, startY);
 

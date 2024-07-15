@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Container, Table } from 'react-bootstrap';
 import axios from 'axios';
 import CustomNavbar from '../components/CustomNavbar';
@@ -7,11 +7,15 @@ import getApiUrl from '../util/api';
 function RelatorioVendas() {
   const [relatorio, setRelatorio] = useState({ itens: [], total_vendido: 0 });
 
-  useEffect(() => {
+  const carregarRelatorio = useCallback(() => {
     axios.get(`${getApiUrl()}/relatorio/`)
       .then(response => setRelatorio(response.data))
       .catch(error => console.error('Error loading report:', error));
   }, []);
+
+  useEffect(() => {
+    carregarRelatorio();
+  }, [carregarRelatorio]);
 
   return (
     <>

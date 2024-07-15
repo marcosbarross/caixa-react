@@ -1,6 +1,3 @@
-#uvicorn main:app --host 10.0.0.144 --port 8000
-
-
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -83,8 +80,8 @@ def create_produto(produto: ProdutoCreate, db: Session = Depends(get_db)):
     return db_produto
 
 @app.get("/produtos/", response_model=List[ProdutoResponse])
-def read_produtos(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    produtos = db.query(Produto).offset(skip).limit(limit).all()
+def read_produtos(db: Session = Depends(get_db)):
+    produtos = db.query(Produto).all()
     return produtos
 
 @app.put("/produtos/{produto_id}", response_model=ProdutoResponse)
