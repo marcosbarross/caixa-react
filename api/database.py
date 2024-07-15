@@ -1,8 +1,17 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
+import os
+from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, func
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, Session
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
+from typing import List
+from pydantic import BaseModel
+from database import SessionLocal, Produto, Pedido, ItemPedido, engine, Base
+from dotenv import load_dotenv
 
-DATABASE_URL = "postgresql://postgres:root@localhost/caixa"
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

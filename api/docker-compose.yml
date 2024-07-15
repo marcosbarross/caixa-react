@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:root@db/caixa_junino_prod
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    container_name: fastapi_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: caixa_junino_prod
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
