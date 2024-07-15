@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List
 from pydantic import BaseModel
-from database import SessionLocal, Produto, Pedido, ItemPedido, engine, Base
+from .database import SessionLocal, engine
+from .models import Produto, Pedido, ItemPedido, Base
 
 Base.metadata.create_all(bind=engine)
 
