@@ -1,4 +1,4 @@
-const api_url = 'http://10.0.0.144:8000';
+const api_url = 'https://caixa-react.onrender.com';
 
 function getApiUrl() {
     return api_url;
